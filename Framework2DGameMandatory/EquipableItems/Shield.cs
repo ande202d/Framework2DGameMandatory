@@ -5,9 +5,9 @@ using Framework2DGameMandatory.Interfaces;
 
 namespace Framework2DGameMandatory.EquipableItems
 {
-    public class Helmet : Equipable, IDefence
+    public class Shield : Equipable, IDefence
     {
-        public Helmet(Position pos, int block, int health) : base(EquipableType.Head, pos)
+        public Shield(Position pos, int block, int health) : base(EquipableType.Shield, pos)
         {
             Block = block;
             Health = health;

@@ -58,6 +58,11 @@ namespace Framework2DGameMandatory
 
         public override string ToString()
         {
+            return $"{Type}";
+        }
+
+        public string Information()
+        {
             return $"{Type} at {Pos}";
         }
     }

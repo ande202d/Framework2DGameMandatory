@@ -15,6 +15,7 @@ namespace Framework2DGameMandatory
         public int BaseHealth { get; set; }
         public int BaseDamage { get; set; } //ex 20
         public Position MyPosition { get; set; }
+        public bool IsDead { get; set; }
 
         //Equipable
         public Equipable Helmet { get; set; }
@@ -38,6 +39,7 @@ namespace Framework2DGameMandatory
             _currentHealth = BaseHealth;
             MyPosition = position;
             BaseDamage = baseDamage;
+            IsDead = false;
 
             CanEquipHead = ceHead;
             CanEquipTorso = ceTorso;
@@ -63,17 +65,43 @@ namespace Framework2DGameMandatory
             return dmgToDeal;
         }
 
+        public void TakeDamage(int dmg)
+        {
+            _currentHealth -= dmg;
+            IsAlive();
+            Console.WriteLine($"{Name} took: {dmg} dmg and now has {_currentHealth}hp left");
+        }
+
+        public bool IsAlive()
+        {
+            if (_currentHealth > 0)
+            {
+                return true;
+            }
+            else
+            {
+                Console.WriteLine(Name + " HAVE DIED");
+                IsDead = true;
+                return false;
+            }
+        }
+
         public bool Equip(Equipable item)
         {
-            if (item == null) return false;
+            if (item == null || IsDead) return false;
             switch (item.Type)
             {
                 case EquipableType.Head:
                     if (CanEquipHead)
                     {
+                        if (Helmet != null)
+                        {
+                            Console.WriteLine($"{Name} picked up: {item}, and threw away: {LeftHand}");
+                            _currentHealth -= ((IDefence)Helmet).Health;
+                        } else Console.WriteLine($"{Name} picked up: {item}");
+
                         _currentHealth += ((IDefence)item).Health;
                         Helmet = item;
-                        Console.WriteLine($"{Name} picked up: {item}");
                         item = null;
                         return true;
                     }
@@ -123,9 +151,15 @@ namespace Framework2DGameMandatory
                 case EquipableType.Shield:
                     if (CanEquipShields)
                     {
+                        if (LeftHand != null)
+                        {
+                            Console.WriteLine($"{Name} picked up: {item}, and threw away: {LeftHand}");
+                            if (LeftHand.IsDefence()) _currentHealth -= ((IDefence) LeftHand).Health;
+                        }
+                        else Console.WriteLine($"{Name} picked up: {item}");
+
                         _currentHealth += ((IDefence)item).Health;
                         LeftHand = item;
-                        Console.WriteLine($"{Name} picked up: {item}");
                         item = null;
                         return true;
                     }
@@ -142,7 +176,11 @@ namespace Framework2DGameMandatory
 
         public String Information()
         {
-            return "Helmet: " + (Helmet == null ? "none" : Helmet.ToString()) +
+            return ToString() + 
+                   "\n-------------------------" +
+                   "\nHelmet: " + (Helmet == null ? "none" : Helmet.ToString()) +
+                   "\nChestplate: " + (Chestplate == null ? "none" : Chestplate.ToString()) +
+                   "\nLeggings: " + (Leggins == null ? "none" : Leggins.ToString()) +
                    "\nRightHand: " + (RightHand == null ? "none" : RightHand.ToString()) +
                    "\nLeftHand: " + (LeftHand == null ? "none" : LeftHand.ToString());
         }
